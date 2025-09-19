@@ -3,13 +3,16 @@ package com.productmanagement.productmanagementapi.service.impl;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.javafaker.Faker;
 import com.productmanagement.productmanagementapi.exception.InvalidException;
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
+import com.productmanagement.productmanagementapi.exception.ResourceAlreadyExistException;
 import com.productmanagement.productmanagementapi.model.entity.User;
 import com.productmanagement.productmanagementapi.repository.UserRepository;
 import com.productmanagement.productmanagementapi.service.UserService;
@@ -28,8 +31,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
         Random random = new Random();
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new ResourceAlreadyExistException("email : " + user.getEmail() + "already existed.");
+        }
         user.setFullName(user.getFirstName() + user.getLastName());
-
         user.setUserName((user.getFirstName() + user.getLastName() + random.nextInt(100)).toLowerCase());
         user.setPassword(generateRandomPassword(random));
         if (user.getDateOfBirth() != null) {
@@ -41,8 +46,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
-    public List<User> AddUserBulk(List<User> users) {
+    public List<User> createUsersBulk(List<User> users) {
         if (users == null || users.isEmpty()) {
             throw new NotFoundException("no user to insert");
         }
@@ -56,11 +62,40 @@ public class UserServiceImpl implements UserService {
             if (user.getDateOfBirth() != null) {
                 user.setAge(Period.between(user.getDateOfBirth(), LocalDate.now()).getYears());
             }
-            if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            if (StringUtils.isNotEmpty(user.getPassword())) {
                 user.setPassword(generateRandomPassword(new Random()));
             }
         }
         return userRepository.saveAll(users);
+    }
+
+    @Override
+    public User getUserById(long id) {
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found with id : " + id));
+    }
+
+    @Override
+    public User updateUserById(long id, User user) {
+        User existed = getUserById(id);
+        existed.setFirstName(user.getFirstName());
+        existed.setLastName(user.getLastName());
+        existed.setFullName(existed.getFirstName() + " " + existed.getLastName());
+        existed.setPhoneNumber(user.getPhoneNumber());
+        existed.setDateOfBirth(user.getDateOfBirth());
+        existed.setAge(Period.between(existed.getDateOfBirth(), LocalDate.now()).getYears());
+        return userRepository.save(existed);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return Optional.of(userRepository.findAll()).filter(user -> !user.isEmpty())
+                .orElseThrow(() -> new NotFoundException("no user have found"));
+    }
+
+    @Override
+    public void deleteUserById(long id) {
+        getUserById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
@@ -70,13 +105,11 @@ public class UserServiceImpl implements UserService {
 
     // generate password
     private String generateRandomPassword(Random random) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String chars = "0123456789";
         StringBuilder password = new StringBuilder();
-
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 4; i++) {
             password.append(chars.charAt(random.nextInt(chars.length())));
         }
-
         return password.toString();
     }
 
@@ -104,7 +137,6 @@ public class UserServiceImpl implements UserService {
                     .minusDays(random.nextInt(365));
             user.setDateOfBirth(birthDate);
             user.setAge(Period.between(user.getDateOfBirth(), LocalDate.now()).getYears());
-
             userRepository.save(user);
         }
     }

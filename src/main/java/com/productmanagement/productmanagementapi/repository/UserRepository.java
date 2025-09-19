@@ -12,6 +12,8 @@ import com.productmanagement.productmanagementapi.model.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    boolean existsByEmail(String email);
+
     @Query(value = "SELECT email FROM users", nativeQuery = true)
     Optional<List<String>> findAllEmail();
 

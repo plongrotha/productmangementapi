@@ -8,8 +8,15 @@ public interface UserService {
 
     User createUser(User user);
 
-    List<User> AddUserBulk(List<User> users);
-
     List<String> getAllEmails();
 
+    User getUserById(long id);
+
+    User updateUserById(long id, User user);
+
+    List<User> getAllUsers();
+
+    void deleteUserById(long id);
+
+    List<User> createUsersBulk(List<User> users);
 }
