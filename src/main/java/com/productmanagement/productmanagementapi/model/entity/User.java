@@ -33,21 +33,21 @@ public class User {
     private String lastName;
 
     @Column(name = "full_name")
-    private String fullname;
+    private String fullName;
 
     @Column(name = "usename")
     private String userName;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phone")
+    @Column(name = "phone", unique = true)
     private String phoneNumber;
 
-    @Column(name = "date_of_birth")
+    @Column(name = "date_of_birth", columnDefinition = "DATE")
     private LocalDate dateOfBirth;
 
     @Column(name = "age")
