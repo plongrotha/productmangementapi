@@ -23,4 +23,7 @@ public class ProductRequest {
     @Positive
     private BigDecimal price;
 
+    @NotNull
+    private long categoryId;
+
 }

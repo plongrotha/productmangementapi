@@ -38,13 +38,13 @@ public class ProductController {
     @Operation(summary = "Add new product")
     @PostMapping
     public ResponseEntity<ApiResponse<ProductResponse>> addProduct(@RequestBody @Valid ProductRequest productRequest) {
-        Product product = productMapper.toEntity(productRequest);
-        productService.addProduct(product);
+        Product saveProduct = productMapper.toEntity(productRequest);
+        productService.addProduct(saveProduct, productRequest.getCategoryId());
         ApiResponse<ProductResponse> response = ApiResponse.<ProductResponse>builder()
                 .code(201)
                 .isSuccess(true)
                 .message("Product created successfully")
-                .payload(productMapper.toDto(product))
+                .payload(productMapper.toDto(saveProduct))
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(201).body(response);
@@ -67,8 +67,8 @@ public class ProductController {
     @Operation(summary = "Get all products")
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts() {
-        java.util.List<Product> products = productService.getAllProduct();
-        ApiResponse<java.util.List<ProductResponse>> response = ApiResponse.<java.util.List<ProductResponse>>builder()
+        List<Product> products = productService.getAllProduct();
+        ApiResponse<List<ProductResponse>> response = ApiResponse.<List<ProductResponse>>builder()
                 .code(200)
                 .isSuccess(true)
                 .message("Products retrieved successfully")
@@ -94,14 +94,13 @@ public class ProductController {
     @Operation(summary = "Add bulk products")
     @PostMapping("/bulk")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> addBulkProducts(
-            @RequestBody @Valid List<ProductRequest> productRequests) {
-        List<Product> products = productMapper.toEntity(productRequests);
-        List<Product> savedProducts = productService.addBulkProducts(products);
+            @RequestBody @Valid List<ProductRequest> productRequest) {
+        List<Product> products = productService.addBulkProducts(productRequest);
         ApiResponse<List<ProductResponse>> response = ApiResponse.<List<ProductResponse>>builder()
                 .code(201)
                 .isSuccess(true)
                 .message("Bulk products created successfully")
-                .payload(productMapper.toDto(savedProducts))
+                .payload(productMapper.toDto(products))
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(201).body(response);
@@ -118,6 +117,35 @@ public class ProductController {
                 .isSuccess(true)
                 .message("Product price updated successfully")
                 .payload(productMapper.toDto(updatedProduct))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get total product count")
+    @GetMapping("/count")
+    public ResponseEntity<ApiResponse<Long>> getTotalProductCount() {
+        long count = productService.totalProductCount();
+        ApiResponse<Long> response = ApiResponse.<Long>builder()
+                .code(200)
+                .isSuccess(true)
+                .message("Total product count retrieved successfully")
+                .payload(count)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get products by category id")
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategoryId(
+            @PathVariable @Positive long categoryId) {
+        List<Product> products = productService.getProductsByCategoryId(categoryId);
+        ApiResponse<List<ProductResponse>> response = ApiResponse.<List<ProductResponse>>builder()
+                .code(200)
+                .isSuccess(true)
+                .message("Products by category retrieved successfully")
+                .payload(productMapper.toDto(products))
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.ok(response);

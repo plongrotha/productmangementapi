@@ -1,6 +1,7 @@
 package com.productmanagement.productmanagementapi.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -9,8 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
 import com.productmanagement.productmanagementapi.exception.ResourceAlreadyExistException;
+import com.productmanagement.productmanagementapi.mapper.ProductMapper;
+import com.productmanagement.productmanagementapi.model.dto.ProductRequest;
+import com.productmanagement.productmanagementapi.model.entity.Category;
 import com.productmanagement.productmanagementapi.model.entity.Product;
-import com.productmanagement.productmanagementapi.model.entity.ProductPriceDto;
+import com.productmanagement.productmanagementapi.repository.CategoryRepository;
 import com.productmanagement.productmanagementapi.repository.ProductRepository;
 import com.productmanagement.productmanagementapi.service.ProductService;
 
@@ -21,9 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
     @Override
-    public Product addProduct(Product product) {
+    public Product addProduct(Product product, long categoryId) {
 
         if (productRepository.existsByProductName(product.getProductName())) {
             throw new ResourceAlreadyExistException(
@@ -32,6 +38,10 @@ public class ProductServiceImpl implements ProductService {
         if (product.getQuantity() != 0) {
             product.setInStock(true);
         }
+        Category existingCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Category with id : " + categoryId + " not found"));
+        product.setCategory(existingCategory);
         return productRepository.save(product);
     }
 
@@ -62,17 +72,36 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> addBulkProducts(List<Product> products) {
-        products.forEach(product -> {
-            if (productRepository.existsByProductName(product.getProductName())) {
+    public List<Product> addBulkProducts(List<ProductRequest> productRequests) {
+        List<Product> productsToSave = new ArrayList<>();
+
+        for (ProductRequest productRequest : productRequests) {
+            // Check if product already exists
+            if (productRepository.existsByProductName(productRequest.getProductName())) {
                 throw new ResourceAlreadyExistException(
-                        "product with name : " + product.getProductName() + " is already existed");
+                        "product with name : " + productRequest.getProductName() + " is already existed");
             }
-            if (product.getQuantity() != 0) {
+
+            // Map ProductRequest to Product entity
+            Product product = productMapper.toEntity(productRequest);
+
+            // Set stock status
+            if (productRequest.getQuantity() != 0) {
                 product.setInStock(true);
             }
-        });
-        return productRepository.saveAll(products);
+
+            // Find and set category
+            Category existingCategory = categoryRepository.findById(productRequest.getCategoryId())
+                    .orElseThrow(() -> new NotFoundException(
+                            "Category with id : " + productRequest.getCategoryId() + " not found"));
+            product.setCategory(existingCategory);
+
+            // Add to list for batch save
+            productsToSave.add(product);
+        }
+
+        // Save all products at once
+        return productRepository.saveAll(productsToSave);
     }
 
     @Override
@@ -81,5 +110,17 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
         product.setPrice(newPrice);
         return productRepository.save(product);
+    }
+
+    @Override
+    public long totalProductCount() {
+        return productRepository.count();
+    }
+
+    @Override
+    public List<Product> getProductsByCategoryId(long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("Category with id : " + categoryId + " not found"));
+        return productRepository.findByCategory_CategoryId(category.getCategoryId());
     }
 }
