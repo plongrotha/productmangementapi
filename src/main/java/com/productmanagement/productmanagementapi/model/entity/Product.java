@@ -3,13 +3,14 @@ package com.productmanagement.productmanagementapi.model.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,8 +38,11 @@ public class Product {
 
     private String imageUrl;
 
-    private LocalDateTime createAt = LocalDateTime.now();
-    private LocalDateTime updateAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updateAt;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

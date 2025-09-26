@@ -1,5 +1,7 @@
 package com.productmanagement.productmanagementapi.service;
 
+import java.util.List;
+
 import com.productmanagement.productmanagementapi.model.entity.Category;
 
 public interface CategoryService {
@@ -9,5 +11,9 @@ public interface CategoryService {
     Category getById(long id);
 
     void deleteById(long id);
+
+    List<Category> allCategories();
+
+    Category updateById(long id, Category category);
 
 }

@@ -1,5 +1,9 @@
 package com.productmanagement.productmanagementapi.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
@@ -27,13 +31,28 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getById(long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("category id : " + id + "is not found"));
+                .orElseThrow(() -> new NotFoundException("category id : " + id + " is not found"));
     }
 
     @Override
     public void deleteById(long id) {
         getById(id);
         categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Category> allCategories() {
+        return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new NotFoundException("no found category"));
+    }
+
+    @Override
+    public Category updateById(long id, Category category) {
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("category id : " + id + " is not found"));
+        existingCategory.setCategoryName(category.getCategoryName());
+        existingCategory.setDescription(category.getDescription());
+        existingCategory.setUpdateAt(LocalDateTime.now());
+        return categoryRepository.save(existingCategory);
     }
 
 }

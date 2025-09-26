@@ -3,6 +3,7 @@ package com.productmanagement.productmanagementapi.model.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,8 +37,8 @@ public class Category {
 
     private String description;
 
-    @UpdateTimestamp
-    private LocalDateTime createAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createAt;
 
     @UpdateTimestamp
     private LocalDateTime updateAt = LocalDateTime.now();

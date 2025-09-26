@@ -38,10 +38,10 @@ public class Order {
     private BigDecimal totalAmount;
 
     @CreationTimestamp
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createAt;
 
     @UpdateTimestamp
-    private LocalDateTime updateAt = LocalDateTime.now();
+    private LocalDateTime updateAt;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

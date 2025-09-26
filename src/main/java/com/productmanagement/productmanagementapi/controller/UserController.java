@@ -89,7 +89,7 @@ public class UserController {
     @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse<UserResponse>> updateUserById(
             @PathVariable @Positive long id,
-            @RequestBody UserUpdateDto dto) {
+            @RequestBody @Valid UserUpdateDto dto) {
         User user = userMapper.toUserEntity(dto);
         userService.updateUserById(id, user);
         ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
@@ -127,5 +127,19 @@ public class UserController {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get an User By Id")
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable @Positive long id) {
+        User user = userService.getUserById(id);
+        ApiResponse<UserResponse> response = ApiResponse.<UserResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("user retrieve successfully")
+                .isSuccess(true)
+                .payload(userMapper.toUserResponse(user))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

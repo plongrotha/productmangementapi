@@ -44,7 +44,7 @@ public class Customer {
     private String country;
 
     @CreationTimestamp
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createAt;
 
     @UpdateTimestamp
     private LocalDateTime updateAt;

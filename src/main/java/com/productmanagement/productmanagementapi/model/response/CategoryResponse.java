@@ -18,6 +18,8 @@ public class CategoryResponse {
     @JsonProperty("category_name")
     private String cateName;
 
+    private String description;
+
     @JsonProperty("created_at")
     private LocalDateTime createAt;
 

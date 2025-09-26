@@ -2,6 +2,8 @@ package com.productmanagement.productmanagementapi.model.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +25,8 @@ public class OutOfInStockProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long outInStockId;
+
+    @CreationTimestamp
     private LocalDateTime outStockDate;
     private String notes;
 
