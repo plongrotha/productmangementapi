@@ -23,4 +23,6 @@ public interface ProductService {
     long totalProductCount();
 
     List<Product> getProductsByCategoryId(long categoryId);
+
+    void deleteBulkProducts(List<Long> productIds);
 }

@@ -151,4 +151,17 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete bulk products by ids")
+    @DeleteMapping("/bulk")
+    public ResponseEntity<ApiResponse<Void>> deleteBulkProducts(@RequestBody List<@Positive Long> productIds) {
+        productService.deleteBulkProducts(productIds);
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .code(200)
+                .isSuccess(true)
+                .message("Bulk products deleted successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
 }

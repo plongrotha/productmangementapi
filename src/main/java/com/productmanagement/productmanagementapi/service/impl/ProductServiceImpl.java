@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -57,14 +56,12 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    @Cacheable(value = "products", key = "#id")
     @Override
     public Product getById(long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
     }
 
-    @CacheEvict(value = "products", key = "#id")
     @Override
     public void deleteById(long id) {
         Product product = productRepository.findById(id).orElseThrow();
@@ -122,5 +119,16 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category with id : " + categoryId + " not found"));
         return productRepository.findByCategory_CategoryId(category.getCategoryId());
+    }
+
+    @Override
+    public void deleteBulkProducts(List<Long> productIds) {
+        productIds.forEach(id -> {
+            if (productRepository.existsById(id)) {
+                productRepository.deleteById(id);
+            } else {
+                throw new NotFoundException("Product with id : " + id + " not found");
+            }
+        });
     }
 }
