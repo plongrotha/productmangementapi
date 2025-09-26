@@ -33,6 +33,7 @@ public class Category {
     @Column(name = "category_id")
     private long categoryId;
 
+    @Column(name = "category_name", unique = true)
     private String categoryName;
 
     private String description;

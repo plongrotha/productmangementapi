@@ -14,6 +14,8 @@ public interface CategoryService {
 
     List<Category> allCategories();
 
+    List<Category> addBulkCategory(List<Category> categories);
+
     Category updateById(long id, Category category);
 
 }

@@ -2,6 +2,7 @@ package com.productmanagement.productmanagementapi.model.response;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class CategoryResponse {
     @JsonProperty("category_name")
     private String cateName;
 
+    @JsonIgnore
     private String description;
 
     @JsonProperty("created_at")

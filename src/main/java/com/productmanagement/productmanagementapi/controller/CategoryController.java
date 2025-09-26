@@ -1,6 +1,7 @@
 package com.productmanagement.productmanagementapi.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class CategoryController {
 
     @Operation(summary = "Create a Category")
     @PostMapping
-    public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
         Category category = categoryMapper.toEntity(categoryDto);
         categoryService.createCreateCategory(category);
 
@@ -105,4 +106,21 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Add bulk of category")
+    @PostMapping("/bulks")
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> addBulk(
+            @RequestBody @Valid List<CategoryDto> categoryDtos) {
+        List<Category> categories = categoryMapper.toListCategoryEntity(categoryDtos);
+        categoryService.addBulkCategory(categories);
+
+        ApiResponse<List<CategoryResponse>> response = ApiResponse.<List<CategoryResponse>>builder()
+                .code(HttpStatus.CREATED.value())
+                .isSuccess(true)
+                .message("bulk of category is created successfully")
+                .payload(categoryMapper.toListCategoryResponse(categories))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.ok().body(response);
+    }
 }

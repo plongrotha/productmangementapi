@@ -2,12 +2,10 @@ package com.productmanagement.productmanagementapi.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
-import com.productmanagement.productmanagementapi.exception.ResourceAlreadyExistException;
 import com.productmanagement.productmanagementapi.model.entity.Category;
 import com.productmanagement.productmanagementapi.repository.CategoryRepository;
 import com.productmanagement.productmanagementapi.service.CategoryService;
@@ -22,9 +20,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void createCreateCategory(Category category) {
-        if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
-            throw new ResourceAlreadyExistException("Category is already exist");
-        }
+        // if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
+        // throw new ResourceAlreadyExistException("Category is already exist");
+        // }
         categoryRepository.save(category);
     }
 
@@ -42,7 +40,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> allCategories() {
-        return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new NotFoundException("no found category"));
+        // return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new
+        // NotFoundException("no found category"));
+
+        List<Category> categories = categoryRepository.findAll();
+        if (categories.isEmpty()) {
+            throw new NotFoundException("no found category in database");
+        }
+        return categories;
     }
 
     @Override
@@ -53,6 +58,11 @@ public class CategoryServiceImpl implements CategoryService {
         existingCategory.setDescription(category.getDescription());
         existingCategory.setUpdateAt(LocalDateTime.now());
         return categoryRepository.save(existingCategory);
+    }
+
+    @Override
+    public List<Category> addBulkCategory(List<Category> categories) {
+        return categoryRepository.saveAll(categories);
     }
 
 }
