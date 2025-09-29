@@ -19,5 +19,6 @@ public class ApiResponse<T> {
     private String message;
     private boolean isSuccess;
     private T payload;
+    private String errorCode;
     private LocalDateTime timestamp;
 }

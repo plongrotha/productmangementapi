@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import com.productmanagement.productmanagementapi.model.entity.Employee;
 
 @Repository
-public interface UserRepository extends JpaRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     boolean existsByEmail(String email);
 
-    @Query(value = "SELECT email FROM users", nativeQuery = true)
+    @Query(value = "SELECT email FROM employees", nativeQuery = true)
     Optional<List<String>> findAllEmail();
 
 }

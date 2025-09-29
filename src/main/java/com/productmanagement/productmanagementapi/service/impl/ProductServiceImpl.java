@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
@@ -44,7 +43,6 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-    @Cacheable(value = "products")
     @Override
     public List<Product> getAllProduct() {
 
@@ -71,33 +69,21 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> addBulkProducts(List<ProductRequest> productRequests) {
         List<Product> productsToSave = new ArrayList<>();
-
         for (ProductRequest productRequest : productRequests) {
-            // Check if product already exists
             if (productRepository.existsByProductName(productRequest.getProductName())) {
                 throw new ResourceAlreadyExistException(
                         "product with name : " + productRequest.getProductName() + " is already existed");
             }
-
-            // Map ProductRequest to Product entity
             Product product = productMapper.toEntity(productRequest);
-
-            // Set stock status
             if (productRequest.getQuantity() != 0) {
                 product.setInStock(true);
             }
-
-            // Find and set category
             Category existingCategory = categoryRepository.findById(productRequest.getCategoryId())
                     .orElseThrow(() -> new NotFoundException(
                             "Category with id : " + productRequest.getCategoryId() + " not found"));
             product.setCategory(existingCategory);
-
-            // Add to list for batch save
             productsToSave.add(product);
         }
-
-        // Save all products at once
         return productRepository.saveAll(productsToSave);
     }
 

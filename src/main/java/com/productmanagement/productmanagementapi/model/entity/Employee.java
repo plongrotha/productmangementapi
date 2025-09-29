@@ -18,13 +18,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "employees")
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private long userId;
+    @Column(name = "employee_id")
+    private Long employeeId;
 
     @Column(name = "first_name")
     private String firstName;
@@ -35,7 +35,7 @@ public class User {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "usename")
+    @Column(name = "username")
     private String userName;
 
     @Column(name = "email", unique = true)

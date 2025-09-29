@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductResponse {
-
     private long id;
     private String productName;
     private int quantity;
@@ -16,5 +15,4 @@ public class ProductResponse {
     private boolean inStock;
     private String price;
     private String categoryName;
-
 }

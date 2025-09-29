@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
-public class UserResponse {
+public class EmployeeResponse {
 
     private long id;
     private String firstName;

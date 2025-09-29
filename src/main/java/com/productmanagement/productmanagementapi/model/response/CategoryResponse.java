@@ -22,9 +22,11 @@ public class CategoryResponse {
     @JsonIgnore
     private String description;
 
+    @JsonIgnore
     @JsonProperty("created_at")
     private LocalDateTime createAt;
 
+    @JsonIgnore
     @JsonProperty("updated_at")
     private LocalDateTime updateAt;
 }

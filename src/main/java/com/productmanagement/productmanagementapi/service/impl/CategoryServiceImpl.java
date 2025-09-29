@@ -2,6 +2,7 @@ package com.productmanagement.productmanagementapi.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -40,14 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> allCategories() {
-        // return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new
-        // NotFoundException("no found category"));
-
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
-            throw new NotFoundException("no found category in database");
-        }
-        return categories;
+        return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new NotFoundException("no found category"));
     }
 
     @Override
