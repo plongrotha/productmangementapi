@@ -19,7 +19,7 @@ public interface ProductMapper {
 
     @Mapping(target = "id", source = "productId")
     @Mapping(target = "categoryName", source = "category.categoryName")
-    ProductResponse toDto(Product entity);
+    ProductResponse toProductResponse(Product entity);
 
     List<ProductResponse> toDto(List<Product> entities);
 

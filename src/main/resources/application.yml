@@ -12,8 +12,3 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  # jackson:
-  #   date-format: yyyy-MM-dd
-  #   time-zone: UTC
-  #   serialization:
-  #     write-dates-as-timestamps: false

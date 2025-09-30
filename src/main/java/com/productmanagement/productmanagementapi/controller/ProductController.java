@@ -43,7 +43,7 @@ public class ProductController {
                         @RequestBody @Valid ProductRequest productRequest) {
                 Product saveProduct = productMapper.toEntity(productRequest);
                 Product createdProduct = productService.addProduct(saveProduct, productRequest.getCategoryId());
-                return ResponseUtil.ok("Product created successfully", productMapper.toDto(createdProduct));
+                return ResponseUtil.ok("product created successfully", productMapper.toProductResponse(createdProduct));
         }
 
         @Operation(summary = "Get a product by id")
@@ -51,7 +51,7 @@ public class ProductController {
         public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable @Positive Long id) {
                 Product product = productService.getById(id);
                 return ResponseUtil.ok("Product retrieved successfully",
-                                productMapper.toDto(product));
+                                productMapper.toProductResponse(product));
         }
 
         @Operation(summary = "Get all products")
@@ -82,7 +82,7 @@ public class ProductController {
                         @PathVariable @Positive Long id,
                         @RequestBody @Valid ProductPriceDto productPriceDto) {
                 Product updatedProduct = productService.updateProductPrice(id, productPriceDto.getPrice());
-                return ResponseUtil.ok("Product price updated successfully", productMapper.toDto(updatedProduct));
+                return ResponseUtil.ok("Product price updated successfully", productMapper.toProductResponse(updatedProduct));
         }
 
         @Operation(summary = "Get total product count")

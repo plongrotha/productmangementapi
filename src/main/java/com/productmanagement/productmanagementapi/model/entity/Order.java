@@ -2,6 +2,7 @@ package com.productmanagement.productmanagementapi.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,9 +34,10 @@ public class Order {
     @Column(name = "order_id")
     private long orderId;
 
-    private LocalDateTime orderDate = LocalDateTime.now();
-
     private BigDecimal totalAmount;
+
+    @CreationTimestamp
+    private LocalDateTime orderDate = LocalDateTime.now();
 
     @CreationTimestamp
     private LocalDateTime createAt;
@@ -48,6 +50,6 @@ public class Order {
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 }

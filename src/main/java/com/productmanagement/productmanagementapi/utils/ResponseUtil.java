@@ -2,10 +2,10 @@ package com.productmanagement.productmanagementapi.utils;
 
 import java.time.LocalDateTime;
 
+import com.productmanagement.productmanagementapi.model.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.productmanagement.productmanagementapi.model.response.ApiResponse;
 
 public class ResponseUtil {
 
@@ -14,11 +14,10 @@ public class ResponseUtil {
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> createSuccessResponse(HttpStatus status, String message,
-            T payload) {
+                                                                           T payload) {
         ApiResponse<T> response = ApiResponse.<T>builder()
                 .code(status.value())
                 .message(message)
-                .isSuccess(true)
                 .payload(payload)
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -29,18 +28,15 @@ public class ResponseUtil {
         ApiResponse<T> response = ApiResponse.<T>builder()
                 .code(status.value())
                 .message(message)
-                .isSuccess(true)
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(status).body(response);
     }
 
-    public static ResponseEntity<ApiResponse<Void>> error(String message, String errorCode, HttpStatus status) {
+    public static ResponseEntity<ApiResponse<Void>> error(String message, HttpStatus status) {
         return ResponseEntity.status(status).body(
                 ApiResponse.<Void>builder()
-                        .isSuccess(false)
                         .message(message)
-                        .errorCode(errorCode)
                         .build());
     }
 
