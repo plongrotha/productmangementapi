@@ -48,12 +48,15 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
 
         BigDecimal totalAmount = BigDecimal.ZERO;
+
         for(OrderItemRequest orderItemRequest : orderRequest.getOrderItems()){
+
             Product product = productRepository.findById(orderItemRequest.getProductId()).orElseThrow(() -> new NotFoundException("Product not found"));
 
             if (!product.isInStock()){
                 throw new NotFoundException("Product is not in stock");
             }
+
             if (product.getQuantity() < orderItemRequest.getQuantity()){
                 throw new NotFoundException("Insufficient stock for product: " + product.getProductName() +
                         ". Available: " + product.getQuantity() +
@@ -61,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
             }
 
             OrderItem orderItem = new OrderItem();
+
             orderItem.setProduct(product);
             orderItem.setOrder(order);
             orderItem.setQuantity(orderItemRequest.getQuantity());
@@ -85,5 +89,14 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         return orderMapper.toOrderResponse(savedOrder);
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        if (orders.isEmpty()){
+            throw  new NotFoundException("No orders found");
+        }
+        return orders;
     }
 }

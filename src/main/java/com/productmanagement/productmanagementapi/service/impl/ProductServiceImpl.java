@@ -3,6 +3,7 @@ package com.productmanagement.productmanagementapi.service.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -116,5 +117,10 @@ public class ProductServiceImpl implements ProductService {
                 throw new NotFoundException("Product with id : " + id + " not found");
             }
         });
+    }
+
+    @Override
+    public List<Product> getAllProductsInStockIsFalse() {
+        return  productRepository.findAll().stream().filter(product -> !product.isInStock()).collect(Collectors.toList());
     }
 }

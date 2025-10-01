@@ -1,0 +1,9 @@
+
+// view log postgres
+docker-compose logs -f postgres
+
+// stop database
+docker-compose down
+
+// stop remove all data
+docker-compose down -v

@@ -18,6 +18,7 @@ public class ResponseUtil {
         ApiResponse<T> response = ApiResponse.<T>builder()
                 .code(status.value())
                 .message(message)
+                .isSuccess(true)
                 .payload(payload)
                 .timestamp(LocalDateTime.now())
                 .build();

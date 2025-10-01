@@ -6,6 +6,8 @@ import com.productmanagement.productmanagementapi.model.response.CustomerRespons
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
 
@@ -16,5 +18,9 @@ public interface CustomerMapper {
     CustomerResponse toCustomerResponse(Customer customer);
 
     Customer toCustomer(CustomerDTO customerDTO);
+
+    List<CustomerResponse> toCustomerResponseList(List<Customer> customerList);
+
+
 
 }
