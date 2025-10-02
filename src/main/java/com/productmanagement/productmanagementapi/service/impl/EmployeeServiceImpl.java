@@ -79,6 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         existed.setFirstName(employee.getFirstName());
         existed.setLastName(employee.getLastName());
         existed.setFullName(existed.getFirstName() + " " + existed.getLastName());
+        existed.setEmail(employee.getEmail());
         existed.setPhoneNumber(employee.getPhoneNumber());
         existed.setDateOfBirth(employee.getDateOfBirth());
         existed.setAge(Period.between(existed.getDateOfBirth(), LocalDate.now()).getYears());

@@ -20,9 +20,6 @@ public class CategoryResponse {
     private String cateName;
 
     @JsonIgnore
-    private String description;
-
-    @JsonIgnore
     @JsonProperty("created_at")
     private LocalDateTime createAt;
 
