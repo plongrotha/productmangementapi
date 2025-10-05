@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class CategoryUpdateRequest {
 
     @NotEmpty(message = "categoryName cannot be empty")
-    @JsonProperty("categoryname")
+    @JsonProperty("categoryName")
     private String categoryName;
 
     @NotEmpty(message = "categoryName cannot be empty")

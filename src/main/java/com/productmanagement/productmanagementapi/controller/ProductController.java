@@ -3,14 +3,7 @@ package com.productmanagement.productmanagementapi.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.productmanagement.productmanagementapi.mapper.ProductMapper;
 import com.productmanagement.productmanagementapi.model.dto.ProductRequest;
@@ -105,5 +98,13 @@ public class ProductController {
     @GetMapping("/notInStock")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProductNotInStock(){
         return  ResponseUtil.ok("product not inStock are retrieve successfully",productMapper.toDto(productService.getAllProductsInStockIsFalse()));
+    }
+
+    @Operation(summary = "Update a product By Id")
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProductById(@PathVariable @Positive Long id, @RequestBody @Valid ProductRequest productRequest) {
+        Product product = productMapper.toEntity(productRequest);
+        Product saveUpdate = productService.updateProductById(id, product);
+        return ResponseUtil.ok("update product successfully", productMapper.toProductResponse(saveUpdate));
     }
 }

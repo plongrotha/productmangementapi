@@ -13,7 +13,7 @@ import com.productmanagement.productmanagementapi.model.response.ProductResponse
 public interface ProductMapper {
 
     @Mapping(target = "productId", ignore = true)
-    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "category.categoryId", source = "categoryId")
     @Mapping(target = "inStock", ignore = true)
     Product toEntity(ProductRequest dto);
 

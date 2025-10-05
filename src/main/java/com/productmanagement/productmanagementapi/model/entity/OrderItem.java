@@ -21,8 +21,10 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
+    @Column(name = "price_per_unit")
     private BigDecimal pricePerUnit;
 
+    @Column(name = "total_price")
     private BigDecimal totalPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)

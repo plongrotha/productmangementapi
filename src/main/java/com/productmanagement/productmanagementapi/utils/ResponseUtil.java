@@ -29,6 +29,7 @@ public class ResponseUtil {
         ApiResponse<T> response = ApiResponse.<T>builder()
                 .code(status.value())
                 .message(message)
+                .isSuccess(true)
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(status).body(response);

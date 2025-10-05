@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class CustomerDTO {
 
     @NotBlank(message = "Customer name is required")
-    @Schema(example = "rotha")
+    @Schema(example = "rota")
     private String customerName;
 
     @Pattern(regexp = "^[0-9]{8,15}$", message = "Phone number must be 8-15 digits")

@@ -27,4 +27,6 @@ public interface ProductService {
     void deleteBulkProducts(List<Long> productIds);
 
     List<Product> getAllProductsInStockIsFalse();
+
+    Product updateProductById(Long id, Product product);
 }

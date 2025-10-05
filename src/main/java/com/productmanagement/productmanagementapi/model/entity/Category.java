@@ -3,18 +3,12 @@ package com.productmanagement.productmanagementapi.model.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +30,7 @@ public class Category {
     @Column(name = "category_name", unique = true)
     private String categoryName;
 
+    @Column(name = "description")
     private String description;
 
     @CreationTimestamp
@@ -45,7 +40,7 @@ public class Category {
     private LocalDateTime updateAt = LocalDateTime.now();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products;
 
 }

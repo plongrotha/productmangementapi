@@ -34,6 +34,7 @@ public class Order {
     @Column(name = "order_id")
     private long orderId;
 
+    @Column(name = "total_price")
     private BigDecimal totalAmount;
 
     @CreationTimestamp

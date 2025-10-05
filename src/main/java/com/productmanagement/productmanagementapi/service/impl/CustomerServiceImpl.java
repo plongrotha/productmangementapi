@@ -24,6 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse createCustomer(CustomerDTO customerDTO) {
         Customer customer = customerMapper.toCustomer(customerDTO);
+//        customer.setPhone();
         customer.setAge(Period.between(customerDTO.getDob(), LocalDate.now()).getYears());
         customer = customerRepository.save(customer);
        return customerMapper.toCustomerResponse(customer);

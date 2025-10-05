@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OutOfInStockProductResponse {
-
+    private Long id;
     private String productName;
 
 }

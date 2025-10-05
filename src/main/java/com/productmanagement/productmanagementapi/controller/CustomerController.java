@@ -20,6 +20,8 @@ import java.util.List;
 @RequestMapping("/api/customers")
 public class CustomerController {
 
+
+    // injecting the service
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
 
@@ -47,6 +49,7 @@ public class CustomerController {
     @Operation(summary = "Delete a Customer By Id")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCustomer(@PathVariable @Positive Long id) {
+        customerService.deleteCustomerById(id);
         return ResponseUtil.ok("delete customer success");
     }
 }

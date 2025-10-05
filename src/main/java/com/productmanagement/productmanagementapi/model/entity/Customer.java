@@ -33,13 +33,16 @@ public class Customer {
     @Column(name = "customer_id")
     private Long customerId;
 
+    @Column(name = "customer_name")
     private String customerName;
 
+    @Column(name = "age")
     private int age;
 
     @Column(name = "phone", unique = true)
     private String phone;
 
+    @Column(name = "dob")
     private LocalDate dob;
 
     @CreationTimestamp

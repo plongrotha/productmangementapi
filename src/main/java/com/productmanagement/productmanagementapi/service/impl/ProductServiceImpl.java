@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
@@ -19,6 +20,7 @@ import com.productmanagement.productmanagementapi.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -34,12 +36,18 @@ public class ProductServiceImpl implements ProductService {
             throw new ResourceAlreadyExistException(
                     "product with name : " + product.getProductName() + " is already existed");
         }
+        log.info("Adding product : " + product.getProductName());
+
         if (product.getQuantity() != 0) {
             product.setInStock(true);
         }
+
+        log.info("Adding product : " + product.getQuantity());
         Category existingCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException(
                         "Category with id : " + categoryId + " not found"));
+
+        log.info("Adding product : " + product.getCategory().getCategoryId());
         product.setCategory(existingCategory);
         return productRepository.save(product);
     }
@@ -70,19 +78,27 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> addBulkProducts(List<ProductRequest> productRequests) {
         List<Product> productsToSave = new ArrayList<>();
+
+        // loop all the product from the requests
         for (ProductRequest productRequest : productRequests) {
             if (productRepository.existsByProductName(productRequest.getProductName())) {
                 throw new ResourceAlreadyExistException(
                         "product with name : " + productRequest.getProductName() + " is already existed");
             }
+
+            // convert request to Domain Model
             Product product = productMapper.toEntity(productRequest);
             if (productRequest.getQuantity() != 0) {
                 product.setInStock(true);
             }
+
+            // check category if existed in database
             Category existingCategory = categoryRepository.findById(productRequest.getCategoryId())
                     .orElseThrow(() -> new NotFoundException(
                             "Category with id : " + productRequest.getCategoryId() + " not found"));
             product.setCategory(existingCategory);
+
+            // save to the database
             productsToSave.add(product);
         }
         return productRepository.saveAll(productsToSave);
@@ -122,5 +138,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAllProductsInStockIsFalse() {
         return  productRepository.findAll().stream().filter(product -> !product.isInStock()).collect(Collectors.toList());
+    }
+
+    @Override
+    public Product updateProductById(Long id, Product product) {
+        Product existedProduct = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
+        Category category = categoryRepository.findById(product.getCategory().getCategoryId()).orElseThrow(() -> new NotFoundException("Category with id : " + product.getCategory().getCategoryId() + " not found"));
+        existedProduct.setCategory(category);
+        existedProduct.setPrice(product.getPrice());
+        existedProduct.setProductName(product.getProductName());
+        existedProduct.setQuantity(product.getQuantity());
+        existedProduct.setImageUrl(product.getImageUrl());
+
+        return productRepository.save(existedProduct);
     }
 }

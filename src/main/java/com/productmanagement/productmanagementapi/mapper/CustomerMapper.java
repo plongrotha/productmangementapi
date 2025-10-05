@@ -17,6 +17,7 @@ public interface CustomerMapper {
     @Mapping(target = "phoneNumber", source = "phone")
     CustomerResponse toCustomerResponse(Customer customer);
 
+    @Mapping(target = "phone", source = "phoneNumber")
     Customer toCustomer(CustomerDTO customerDTO);
 
     List<CustomerResponse> toCustomerResponseList(List<Customer> customerList);

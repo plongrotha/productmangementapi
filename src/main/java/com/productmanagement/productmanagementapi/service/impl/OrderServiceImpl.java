@@ -8,18 +8,13 @@ import java.util.List;
 import com.productmanagement.productmanagementapi.mapper.OrderMapper;
 import com.productmanagement.productmanagementapi.model.dto.OrderItemRequest;
 import com.productmanagement.productmanagementapi.model.dto.OrderRequest;
-import com.productmanagement.productmanagementapi.model.entity.Product;
+import com.productmanagement.productmanagementapi.model.entity.*;
 import com.productmanagement.productmanagementapi.model.response.OrderResponse;
-import com.productmanagement.productmanagementapi.repository.OrderItemRepsitory;
+import com.productmanagement.productmanagementapi.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
-import com.productmanagement.productmanagementapi.model.entity.Customer;
-import com.productmanagement.productmanagementapi.model.entity.Order;
-import com.productmanagement.productmanagementapi.model.entity.OrderItem;
-import com.productmanagement.productmanagementapi.repository.CustomerRepository;
-import com.productmanagement.productmanagementapi.repository.OrderRepository;
-import com.productmanagement.productmanagementapi.repository.ProductRepository;
 import com.productmanagement.productmanagementapi.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,9 +28,11 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderItemRepsitory orderItemRepsitory;
     private final OrderMapper orderMapper;
+    private final OutOfInStockProductRepository outOfInStockProductRepository;
 
 
 
+    @Transactional
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
 
@@ -46,7 +43,6 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now());
 
         List<OrderItem> orderItems = new ArrayList<>();
-
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for(OrderItemRequest orderItemRequest : orderRequest.getOrderItems()){
@@ -58,26 +54,35 @@ public class OrderServiceImpl implements OrderService {
             }
 
             if (product.getQuantity() < orderItemRequest.getQuantity()){
-                throw new NotFoundException("Insufficient stock for product: " + product.getProductName() +
+                throw new NotFoundException("Insufficient stock for product: " + product.getProductId() +
                         ". Available: " + product.getQuantity() +
                         ", Requested: " + orderItemRequest.getQuantity());
             }
 
+            // set orderItem and save
             OrderItem orderItem = new OrderItem();
 
             orderItem.setProduct(product);
             orderItem.setOrder(order);
             orderItem.setQuantity(orderItemRequest.getQuantity());
             orderItem.setPricePerUnit(product.getPrice());
-
             BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(orderItemRequest.getQuantity()));
-
             orderItem.setTotalPrice(totalPrice);
 
+            // add orderItem to list
             orderItems.add(orderItem);
             orderItemRepsitory.save(orderItem);
 
             product.setQuantity(orderItemRequest.getQuantity() - product.getQuantity());
+
+            if (product.getQuantity() == 0){
+                OutOfInStockProduct outOfInStockProduct = new OutOfInStockProduct();
+                outOfInStockProduct.setProduct(product);
+                outOfInStockProduct.setNotes("product is ran out of stock");
+                outOfInStockProduct.setOutStockDate(LocalDateTime.now());
+                outOfInStockProductRepository.save(outOfInStockProduct);
+            }
+
             productRepository.save(product);
 
             totalAmount = totalAmount.add(totalPrice);
