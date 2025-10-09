@@ -27,7 +27,7 @@ public class OrderItem {
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
 

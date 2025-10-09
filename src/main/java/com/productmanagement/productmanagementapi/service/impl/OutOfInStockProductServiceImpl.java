@@ -1,6 +1,7 @@
 package com.productmanagement.productmanagementapi.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class OutOfInStockProductServiceImpl implements OutOfInStockProductServic
 
     @Override
     public List<OutOfInStockProduct> allOutOfStock() {
-
-        return null;
+        return Optional.ofNullable(inStockProductRepository.findAll())
+                .orElseThrow(() -> new RuntimeException("No out of stock products found"));
     }
 }

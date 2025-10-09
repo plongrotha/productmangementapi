@@ -8,4 +8,6 @@ import com.productmanagement.productmanagementapi.model.entity.OutOfInStockProdu
 @Repository
 public interface OutOfInStockProductRepository extends JpaRepository<OutOfInStockProduct, Long> {
 
+    void deleteByProduct_productId(long productId);
+
 }

@@ -20,6 +20,6 @@ public class OrderResponse {
     private BigDecimal totalAmount;
     private List<OrderItemResponse> orderItems;
     private LocalDateTime orderDate;
-    private LocalDateTime createDate;
+    private LocalDateTime createAt;
 
 }

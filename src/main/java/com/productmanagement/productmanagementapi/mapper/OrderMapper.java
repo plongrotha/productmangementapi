@@ -6,7 +6,6 @@ import com.productmanagement.productmanagementapi.model.response.OrderResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.productmanagement.productmanagementapi.model.dto.OrderRequest;
 import com.productmanagement.productmanagementapi.model.entity.Order;
 
 import java.util.List;

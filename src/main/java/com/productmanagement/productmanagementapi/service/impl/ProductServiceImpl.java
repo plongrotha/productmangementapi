@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.productmanagement.productmanagementapi.repository.OrderItemRepsitory;
+import com.productmanagement.productmanagementapi.repository.OutOfInStockProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final OrderItemRepsitory orderItemRepsitory;
+    private final OutOfInStockProductRepository outOfInStockProductRepository;
 
     @Override
     public Product addProduct(Product product, long categoryId) {
@@ -69,14 +74,23 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
     }
 
+    @Transactional
     @Override
     public void deleteById(long id) {
-        Product product = productRepository.findById(id).orElseThrow();
+        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
+
+        // remove the key that have reference to table product first
+        orderItemRepsitory.deleteByProduct_productId(product.getProductId());
+        outOfInStockProductRepository.deleteByProduct_productId(product.getProductId());
+
+        // this is too
+
         productRepository.deleteById(product.getProductId());
     }
 
     @Override
     public List<Product> addBulkProducts(List<ProductRequest> productRequests) {
+
         List<Product> productsToSave = new ArrayList<>();
 
         // loop all the product from the requests

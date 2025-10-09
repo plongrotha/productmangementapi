@@ -31,12 +31,11 @@ public class OrderServiceImpl implements OrderService {
     private final OutOfInStockProductRepository outOfInStockProductRepository;
 
 
-
     @Transactional
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
 
-        Customer customer = customerRepository.findById(orderRequest.getCustomerId()).orElseThrow(()->new NotFoundException("Customer not found"));
+        Customer customer = customerRepository.findById(orderRequest.getCustomerId()).orElseThrow(() -> new NotFoundException("Customer not found"));
 
         Order order = new Order();
         order.setCustomer(customer);
@@ -45,15 +44,15 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
 
-        for(OrderItemRequest orderItemRequest : orderRequest.getOrderItems()){
+        for (OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
 
             Product product = productRepository.findById(orderItemRequest.getProductId()).orElseThrow(() -> new NotFoundException("Product not found"));
 
-            if (!product.isInStock()){
+            if (!product.isInStock()) {
                 throw new NotFoundException("Product is not in stock");
             }
 
-            if (product.getQuantity() < orderItemRequest.getQuantity()){
+            if (product.getQuantity() < orderItemRequest.getQuantity()) {
                 throw new NotFoundException("Insufficient stock for product: " + product.getProductId() +
                         ". Available: " + product.getQuantity() +
                         ", Requested: " + orderItemRequest.getQuantity());
@@ -73,17 +72,16 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(orderItem);
             orderItemRepsitory.save(orderItem);
 
-            product.setQuantity(orderItemRequest.getQuantity() - product.getQuantity());
+            product.setQuantity(product.getQuantity() - orderItemRequest.getQuantity());
+            productRepository.save(product);
 
-            if (product.getQuantity() == 0){
+            if (product.getQuantity() == 0) {
                 OutOfInStockProduct outOfInStockProduct = new OutOfInStockProduct();
                 outOfInStockProduct.setProduct(product);
                 outOfInStockProduct.setNotes("product is ran out of stock");
                 outOfInStockProduct.setOutStockDate(LocalDateTime.now());
                 outOfInStockProductRepository.save(outOfInStockProduct);
             }
-
-            productRepository.save(product);
 
             totalAmount = totalAmount.add(totalPrice);
         }
@@ -99,8 +97,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
-        if (orders.isEmpty()){
-            throw  new NotFoundException("No orders found");
+        if (orders.isEmpty()) {
+            throw new NotFoundException("No orders found");
         }
         return orders;
     }
