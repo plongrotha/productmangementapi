@@ -20,7 +20,8 @@ public class OutOfInStockProduct {
 
     private LocalDateTime outStockDate;
 
-    private String notes;
+    @Column(name = "status")
+    private boolean status;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")

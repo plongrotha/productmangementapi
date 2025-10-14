@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
@@ -39,6 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(id);
     }
 
+    @Cacheable("employee")
     @Override
     public List<Category> allCategories() {
         return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new NotFoundException("no found category"));
@@ -54,6 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(existingCategory);
     }
 
+    @Cacheable("employee")
     @Override
     public List<Category> addBulkCategory(List<Category> categories) {
         return categoryRepository.saveAll(categories);

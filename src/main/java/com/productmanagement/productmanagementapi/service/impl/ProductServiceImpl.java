@@ -164,6 +164,10 @@ public class ProductServiceImpl implements ProductService {
         existedProduct.setQuantity(product.getQuantity());
         existedProduct.setImageUrl(product.getImageUrl());
 
+        // delete record from out_of in stock if having update the quantity greater then 0
+        if (existedProduct.getQuantity() > 0){
+            outOfInStockProductRepository.deleteByProduct_productId(existedProduct.getProductId());
+        }
         return productRepository.save(existedProduct);
     }
 }
