@@ -20,11 +20,9 @@ import java.util.List;
 @RequestMapping("/api/customers")
 public class CustomerController {
 
-
     // injecting the service
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
-
 
     @Operation(summary = "Create a Customer")
     @PostMapping

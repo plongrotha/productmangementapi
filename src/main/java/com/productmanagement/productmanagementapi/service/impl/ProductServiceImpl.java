@@ -77,7 +77,8 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteById(long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
 
         // remove the key that have reference to table product first
         orderItemRepsitory.deleteByProduct_productId(product.getProductId());
@@ -88,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(product.getProductId());
     }
 
+    @Transactional
     @Override
     public List<Product> addBulkProducts(List<ProductRequest> productRequests) {
 
@@ -151,21 +153,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAllProductsInStockIsFalse() {
-        return  productRepository.findAll().stream().filter(product -> !product.isInStock()).collect(Collectors.toList());
+        return productRepository.findAll().stream().filter(product -> !product.isInStock())
+                .collect(Collectors.toList());
     }
 
     @Override
     public Product updateProductById(Long id, Product product) {
-        Product existedProduct = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
-        Category category = categoryRepository.findById(product.getCategory().getCategoryId()).orElseThrow(() -> new NotFoundException("Category with id : " + product.getCategory().getCategoryId() + " not found"));
+        Product existedProduct = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
+        Category category = categoryRepository.findById(product.getCategory().getCategoryId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Category with id : " + product.getCategory().getCategoryId() + " not found"));
         existedProduct.setCategory(category);
         existedProduct.setPrice(product.getPrice());
         existedProduct.setProductName(product.getProductName());
         existedProduct.setQuantity(product.getQuantity());
         existedProduct.setImageUrl(product.getImageUrl());
 
-        // delete record from out_of in stock if having update the quantity greater then 0
-        if (existedProduct.getQuantity() > 0){
+        // delete record from out_of in stock if having update the quantity greater then
+        // 0
+        if (existedProduct.getQuantity() > 0) {
             outOfInStockProductRepository.deleteByProduct_productId(existedProduct.getProductId());
         }
         return productRepository.save(existedProduct);

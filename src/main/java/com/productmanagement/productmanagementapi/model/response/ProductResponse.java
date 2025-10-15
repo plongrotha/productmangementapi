@@ -14,5 +14,5 @@ public class ProductResponse {
     private String imageUrl;
     private boolean inStock;
     private String price;
-    private String categoryName;
+    private Integer categoryId;
 }

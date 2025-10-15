@@ -75,4 +75,12 @@ public class EmployeeController {
         Employee employee = employeeService.getEmployeeById(id);
         return ResponseUtil.ok("employee retrieve successfully", employeeMapper.toEmployeeResponse(employee));
     }
+
+    @Operation(summary = "Create Bulk Employees")
+    @PostMapping("/bulks")
+    public ResponseEntity<ApiResponse<List<EmployeeResponse>>> createEmployeeBulks(@RequestBody List<EmployeeDTO> employeeDTOS) {
+        List<Employee> employees = employeeMapper.toListEmployeeEntity(employeeDTOS);
+        List<Employee> savedAllEmployees = employeeService.createEmployeesBulk(employees);
+        return ResponseUtil.created("all employees bulk successfully", employeeMapper.toListEmployeeResponse(savedAllEmployees));
+    }
 }

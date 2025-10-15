@@ -30,12 +30,12 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final OutOfInStockProductRepository outOfInStockProductRepository;
 
-
     @Transactional
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
 
-        Customer customer = customerRepository.findById(orderRequest.getCustomerId()).orElseThrow(() -> new NotFoundException("Customer not found"));
+        Customer customer = customerRepository.findById(orderRequest.getCustomerId())
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         Order order = new Order();
         order.setCustomer(customer);
@@ -46,17 +46,20 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
 
-            Product product = productRepository.findById(orderItemRequest.getProductId()).orElseThrow(() -> new NotFoundException("Product not found"));
+            Product product = productRepository.findById(orderItemRequest.getProductId())
+                    .orElseThrow(() -> new NotFoundException("Product not found"));
 
             if (!product.isInStock()) {
                 throw new NotFoundException("Product is not in stock");
             }
 
             if (product.getQuantity() < orderItemRequest.getQuantity()) {
+                product.setInStock(false);
                 throw new NotFoundException("Insufficient stock for product: " + product.getProductId() +
                         ". Available: " + product.getQuantity() +
                         ", Requested: " + orderItemRequest.getQuantity());
             }
+
 
             // set orderItem and save
             OrderItem orderItem = new OrderItem();
@@ -78,7 +81,6 @@ public class OrderServiceImpl implements OrderService {
             if (product.getQuantity() == 0) {
                 OutOfInStockProduct outOfInStockProduct = new OutOfInStockProduct();
                 outOfInStockProduct.setProduct(product);
-                outOfInStockProduct.setNotes("product is ran out of stock");
                 outOfInStockProduct.setOutStockDate(LocalDateTime.now());
                 outOfInStockProductRepository.save(outOfInStockProduct);
             }

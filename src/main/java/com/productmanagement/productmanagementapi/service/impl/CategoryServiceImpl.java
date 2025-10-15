@@ -13,6 +13,7 @@ import com.productmanagement.productmanagementapi.model.entity.Category;
 import com.productmanagement.productmanagementapi.repository.CategoryRepository;
 import com.productmanagement.productmanagementapi.service.CategoryService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.save(category);
     }
 
+    @Cacheable(value = "employee", key = "#id")
     @Override
     public Category getById(long id) {
         return categoryRepository.findById(id)
@@ -37,8 +39,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteById(long id) {
-        getById(id);
-        categoryRepository.deleteById(id);
+        // getById(id);
+        // categoryRepository.deleteById(id);
+        categoryRepository.findById(id).ifPresentOrElse(categoryRepository::delete, () -> {
+            throw new NotFoundException("The category with id : " + id + "is not found");
+        });
     }
 
     @Cacheable("employee")
@@ -57,6 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(existingCategory);
     }
 
+    @Transactional
     @Cacheable("employee")
     @Override
     public List<Category> addBulkCategory(List<Category> categories) {
