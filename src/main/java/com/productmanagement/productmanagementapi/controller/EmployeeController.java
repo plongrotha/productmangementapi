@@ -35,7 +35,7 @@ public class EmployeeController {
     public ResponseEntity<ApiResponse<EmployeeResponse>> createEmployee(@RequestBody @Valid EmployeeDTO dto) {
         Employee employee = employeeMapper.toEmployeeEntity(dto);
         Employee savedEmployee = employeeService.createEmployee(employee);
-        return ResponseUtil.created("employee", employeeMapper.toEmployeeResponse(savedEmployee));
+        return ResponseUtil.created("a employee is created successfully", employeeMapper.toEmployeeResponse(savedEmployee));
     }
 
     @Operation(summary = "Get All Email")
