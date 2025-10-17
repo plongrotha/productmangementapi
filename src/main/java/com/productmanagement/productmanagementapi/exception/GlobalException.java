@@ -1,0 +1,108 @@
+package com.productmanagement.productmanagementapi.exception;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
+@RestControllerAdvice
+public class GlobalException {
+
+    private ProblemDetail buildProblemDetail(HttpStatus status, String title, String detail) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(status, detail);
+        pd.setTitle(title);
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail handleNotFoundException(NotFoundException e, WebRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        problemDetail.setTitle("Resource Not Found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail handleConflictException(ConflictException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+        problemDetail.setTitle("Conflict Error");
+        return problemDetail;
+    }
+
+    @ExceptionHandler({ InvalidFormatException.class, BadRequestException.class, ResourceAlreadyExistException.class })
+    public ProblemDetail handleNotVerifiedException(Exception e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Validation Failed");
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        // Collect field validation errors
+        Map<String, String> errors = new HashMap<>();
+        int blankFieldErrors = 0;
+
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+
+            // Check if the error is specifically "must not be blank"
+            if ("must not be blank".equals(fieldError.getDefaultMessage())) {
+                blankFieldErrors++;
+            }
+        }
+
+        // Add errors to ProblemDetail as extra properties
+        problemDetail.setProperty("errors", errors);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ProblemDetail handleMethodValidationException(HandlerMethodValidationException e) {
+        Map<String, String> errors = new HashMap<>();
+
+        // Loop through each invalid parameter validation result
+        e.getParameterValidationResults().forEach(parameterError -> {
+            String paramName = parameterError.getMethodParameter().getParameterName(); // Get parameter name
+
+            // Loop through each validation error message for this parameter
+            for (var messageError : parameterError.getResolvableErrors()) {
+                errors.put(paramName, messageError.getDefaultMessage()); // Store error message
+            }
+        });
+
+        // Create structured ProblemDetail response
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Method Parameter Validation Failed");
+        problemDetail.setProperties(Map.of("timestamp", LocalDateTime.now(), "errors", errors // Attach validation
+                                                                                              // errors
+        ));
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleGenericException(Exception e) {
+        ProblemDetail pd = buildProblemDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+                e.getMessage());
+        return pd;
+    }
+
+}

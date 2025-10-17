@@ -1,0 +1,20 @@
+package com.productmanagement.productmanagementapi.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.productmanagement.productmanagementapi.model.entity.Employee;
+
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+
+    boolean existsByEmail(String email);
+
+    @Query(value = "SELECT email FROM employees", nativeQuery = true)
+    Optional<List<String>> findAllEmail();
+
+}
