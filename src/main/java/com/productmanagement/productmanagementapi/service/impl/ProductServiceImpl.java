@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.productmanagement.productmanagementapi.repository.OrderItemRepsitory;
-import com.productmanagement.productmanagementapi.repository.OutOfInStockProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
     private final OrderItemRepsitory orderItemRepsitory;
-    private final OutOfInStockProductRepository outOfInStockProductRepository;
 
     @Override
     public Product addProduct(Product product, long categoryId) {
@@ -79,13 +77,6 @@ public class ProductServiceImpl implements ProductService {
     public void deleteById(long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product with id : " + id + " not found"));
-
-        // remove the key that have reference to table product first
-        orderItemRepsitory.deleteByProduct_productId(product.getProductId());
-        outOfInStockProductRepository.deleteByProduct_productId(product.getProductId());
-
-        // this is too
-
         productRepository.deleteById(product.getProductId());
     }
 
@@ -157,6 +148,15 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
+    // public Product updateProduct(Long id, Consumer<Product> productConsumer) {
+    // Product product = productRepository.findById(id).orElseThrow(() -> new
+    // NotFoundException("Product with id : " + id + " not found"));
+    // productConsumer.accept(product);
+    // if (product.getQuantity() < 0)
+    // outOfInStockProductRepository.deleteByProduct_productId(id);
+    // return productRepository.save(product);
+    // }
+
     @Override
     public Product updateProductById(Long id, Product product) {
         Product existedProduct = productRepository.findById(id)
@@ -168,13 +168,11 @@ public class ProductServiceImpl implements ProductService {
         existedProduct.setPrice(product.getPrice());
         existedProduct.setProductName(product.getProductName());
         existedProduct.setQuantity(product.getQuantity());
+        if (existedProduct.getQuantity() > 0) {
+            existedProduct.setInStock(true);
+        }
         existedProduct.setImageUrl(product.getImageUrl());
 
-        // delete record from out_of in stock if having update the quantity greater then
-        // 0
-        if (existedProduct.getQuantity() > 0) {
-            outOfInStockProductRepository.deleteByProduct_productId(existedProduct.getProductId());
-        }
         return productRepository.save(existedProduct);
     }
 }

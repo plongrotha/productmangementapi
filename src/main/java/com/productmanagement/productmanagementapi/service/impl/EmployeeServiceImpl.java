@@ -8,7 +8,6 @@ import java.util.Random;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.javafaker.Faker;
 import com.productmanagement.productmanagementapi.exception.InvalidException;
 import com.productmanagement.productmanagementapi.exception.NotFoundException;
 import com.productmanagement.productmanagementapi.exception.ResourceAlreadyExistException;
@@ -120,31 +119,33 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     // @PostConstruct
-    @SuppressWarnings("unused")
-    private void addEmployee() {
-        Faker faker = new Faker();
-
-        for (int i = 0; i < 50; i++) { // Generate 50 fake employees
-            Employee employee = new Employee();
-            Random random = new Random();
-            String firstName = faker.name().firstName();
-            String lastName = faker.name().lastName();
-
-            employee.setFirstName(firstName);
-            employee.setLastName(lastName);
-            employee.setFullName(firstName + " " + lastName);
-            employee.setUserName((firstName + lastName + random.nextInt(1000)).toLowerCase());
-            employee.setEmail(firstName.toLowerCase() + "." + lastName.toLowerCase() +
-                    random.nextInt(100) + "@" + faker.internet().domainName());
-            employee.setPassword(faker.internet().password(4, 6, true, true));
-            employee.setPhoneNumber(faker.number().digits(random.nextInt(8) + 8));
-            LocalDate birthDate = LocalDate.now()
-                    .minusYears(18 + random.nextInt(62))
-                    .minusDays(random.nextInt(365));
-            employee.setDateOfBirth(birthDate);
-            employee.setAge(Period.between(employee.getDateOfBirth(), LocalDate.now()).getYears());
-            employeeRepository.save(employee);
-        }
-    }
+    // @SuppressWarnings("unused")
+    // private void addEmployee() {
+    // Faker faker = new Faker();
+    //
+    // for (int i = 0; i < 50; i++) { // Generate 50 fake employees
+    // Employee employee = new Employee();
+    // Random random = new Random();
+    // String firstName = faker.name().firstName();
+    // String lastName = faker.name().lastName();
+    //
+    // employee.setFirstName(firstName);
+    // employee.setLastName(lastName);
+    // employee.setFullName(firstName + " " + lastName);
+    // employee.setUserName((firstName + lastName +
+    // random.nextInt(1000)).toLowerCase());
+    // employee.setEmail(firstName.toLowerCase() + "." + lastName.toLowerCase() +
+    // random.nextInt(100) + "@" + faker.internet().domainName());
+    // employee.setPassword(faker.internet().password(4, 6, true, true));
+    // employee.setPhoneNumber(faker.number().digits(random.nextInt(8) + 8));
+    // LocalDate birthDate = LocalDate.now()
+    // .minusYears(18 + random.nextInt(62))
+    // .minusDays(random.nextInt(365));
+    // employee.setDateOfBirth(birthDate);
+    // employee.setAge(Period.between(employee.getDateOfBirth(),
+    // LocalDate.now()).getYears());
+    // employeeRepository.save(employee);
+    // }
+    // }
 
 }

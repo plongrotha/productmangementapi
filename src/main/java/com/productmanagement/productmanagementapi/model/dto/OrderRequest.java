@@ -13,9 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequest {
 
-    @NotNull
-    @Schema(example = "1")
-    private Long customerId;
+    // @NotNull
+    // @Schema(example = "1")
+    // private Long customerId;
 
     List<OrderItemRequest> orderItems;
 }

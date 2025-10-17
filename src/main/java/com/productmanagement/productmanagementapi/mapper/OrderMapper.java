@@ -7,18 +7,19 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.productmanagement.productmanagementapi.model.entity.Order;
-
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
-    @Mapping(source = "customer.customerId", target = "customerId")
-    @Mapping(target = "phone", source = "customer.phone")
-    @Mapping(target = "customerName", source = "customer.customerName")
+
+    // @Mapping(source = "customer.customerId", target = "customerId")
+    // @Mapping(target = "phone", source = "customer.phone")
+    // @Mapping(target = "customerName", source = "customer.customerName")
     OrderResponse toOrderResponse(Order order);
 
     @Mapping(target = "productId", source = "product.productId")
     @Mapping(target = "productName", source = "product.productName")
+    @Mapping(target = "imageUrl", source = "product.imageUrl")
     OrderItemResponse toOrderItemResponse(OrderItem orderItem);
 
     List<OrderResponse> toListOrderResponse(List<Order> orders);

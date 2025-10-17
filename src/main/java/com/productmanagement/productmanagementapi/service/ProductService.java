@@ -29,4 +29,5 @@ public interface ProductService {
     List<Product> getAllProductsInStockIsFalse();
 
     Product updateProductById(Long id, Product product);
+
 }

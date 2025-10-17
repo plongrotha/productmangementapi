@@ -28,17 +28,16 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderItemRepsitory orderItemRepsitory;
     private final OrderMapper orderMapper;
-    private final OutOfInStockProductRepository outOfInStockProductRepository;
 
     @Transactional
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
 
-        Customer customer = customerRepository.findById(orderRequest.getCustomerId())
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        // Customer customer = customerRepository.findById(orderRequest.getCustomerId())
+        // .orElseThrow(() -> new NotFoundException("Customer not found"));
 
         Order order = new Order();
-        order.setCustomer(customer);
+        // order.setCustomer(customer);
         order.setOrderDate(LocalDateTime.now());
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -48,19 +47,14 @@ public class OrderServiceImpl implements OrderService {
 
             Product product = productRepository.findById(orderItemRequest.getProductId())
                     .orElseThrow(() -> new NotFoundException("Product not found"));
-
-            if (!product.isInStock()) {
-                throw new NotFoundException("Product is not in stock");
+            if (product.getQuantity() == 0) {
+                throw new NotFoundException("Product is not have in stock");
             }
-
             if (product.getQuantity() < orderItemRequest.getQuantity()) {
-                product.setInStock(false);
                 throw new NotFoundException("Insufficient stock for product: " + product.getProductId() +
                         ". Available: " + product.getQuantity() +
                         ", Requested: " + orderItemRequest.getQuantity());
             }
-
-
             // set orderItem and save
             OrderItem orderItem = new OrderItem();
 
@@ -75,22 +69,21 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(orderItem);
             orderItemRepsitory.save(orderItem);
 
+            // update quantity when order ready
             product.setQuantity(product.getQuantity() - orderItemRequest.getQuantity());
             productRepository.save(product);
-
             if (product.getQuantity() == 0) {
-                OutOfInStockProduct outOfInStockProduct = new OutOfInStockProduct();
-                outOfInStockProduct.setProduct(product);
-                outOfInStockProduct.setOutStockDate(LocalDateTime.now());
-                outOfInStockProductRepository.save(outOfInStockProduct);
-            }
+                product.setInStock(false);
 
+                productRepository.delete(product);
+            }
             totalAmount = totalAmount.add(totalPrice);
         }
 
         order.setOrderItems(orderItems);
         order.setTotalAmount(totalAmount);
 
+      
         Order savedOrder = orderRepository.save(order);
 
         return orderMapper.toOrderResponse(savedOrder);

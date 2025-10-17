@@ -19,7 +19,7 @@ public interface CustomerMapper {
     @Mapping(target = "age", ignore = true)
     @Mapping(target = "createAt", ignore = true)
     @Mapping(target = "customerId", ignore = true)
-    @Mapping(target = "orders", ignore = true)
+    // @Mapping(target = "orders", ignore = true)
     @Mapping(target = "updateAt", ignore = true)
     Customer toCustomer(CustomerDTO customerDTO);
 

@@ -51,6 +51,7 @@ public class Customer {
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
+    // @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval =
+    // true)
+    // private List<Order> orders;
 }

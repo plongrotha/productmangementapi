@@ -46,9 +46,9 @@ public class Order {
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    // @ManyToOne
+    // @JoinColumn(name = "customer_id")
+    // private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
