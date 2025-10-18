@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/employees")
 @Tag(name = "Employee Management", description = "APIs for managing employees")
-@CrossOrigin(origins = "http://localhost:4200")
+// @CrossOrigin(origins = "http://localhost:4200")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -35,7 +35,8 @@ public class EmployeeController {
     public ResponseEntity<ApiResponse<EmployeeResponse>> createEmployee(@RequestBody @Valid EmployeeDTO dto) {
         Employee employee = employeeMapper.toEmployeeEntity(dto);
         Employee savedEmployee = employeeService.createEmployee(employee);
-        return ResponseUtil.created("a employee is created successfully", employeeMapper.toEmployeeResponse(savedEmployee));
+        return ResponseUtil.created("a employee is created successfully",
+                employeeMapper.toEmployeeResponse(savedEmployee));
     }
 
     @Operation(summary = "Get All Email")
@@ -78,9 +79,11 @@ public class EmployeeController {
 
     @Operation(summary = "Create Bulk Employees")
     @PostMapping("/bulks")
-    public ResponseEntity<ApiResponse<List<EmployeeResponse>>> createEmployeeBulks(@RequestBody List<EmployeeDTO> employeeDTOS) {
+    public ResponseEntity<ApiResponse<List<EmployeeResponse>>> createEmployeeBulks(
+            @RequestBody List<EmployeeDTO> employeeDTOS) {
         List<Employee> employees = employeeMapper.toListEmployeeEntity(employeeDTOS);
         List<Employee> savedAllEmployees = employeeService.createEmployeesBulk(employees);
-        return ResponseUtil.created("all employees bulk successfully", employeeMapper.toListEmployeeResponse(savedAllEmployees));
+        return ResponseUtil.created("all employees bulk successfully",
+                employeeMapper.toListEmployeeResponse(savedAllEmployees));
     }
 }

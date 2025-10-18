@@ -61,14 +61,16 @@ public class ProductController {
 
     @Operation(summary = "Add bulk products")
     @PostMapping("/bulk")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> addBulkProducts(@RequestBody @Valid List<ProductRequest> productRequest) {
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> addBulkProducts(
+            @RequestBody @Valid List<ProductRequest> productRequest) {
         List<Product> products = productService.addBulkProducts(productRequest);
         return ResponseUtil.ok("Bulk products created successfully", productMapper.toDto(products));
     }
 
     @Operation(summary = "Update product price by id")
     @PatchMapping("/{id}/price")
-    public ResponseEntity<ApiResponse<ProductResponse>> updateProductPrice(@PathVariable @Positive Long id, @RequestBody @Valid ProductPriceDto productPriceDto) {
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProductPrice(@PathVariable @Positive Long id,
+            @RequestBody @Valid ProductPriceDto productPriceDto) {
         Product updatedProduct = productService.updateProductPrice(id, productPriceDto.getPrice());
         return ResponseUtil.ok("Product price updated successfully", productMapper.toProductResponse(updatedProduct));
     }
@@ -82,27 +84,31 @@ public class ProductController {
 
     @Operation(summary = "Get products by category id")
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategoryId(@PathVariable @Positive Long categoryId) {
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategoryId(
+            @PathVariable @Positive Long categoryId) {
         List<Product> products = productService.getProductsByCategoryId(categoryId);
         return ResponseUtil.ok("Products by category retrieved successfully", productMapper.toDto(products));
     }
 
     @Operation(summary = "Delete bulk products by ids")
     @DeleteMapping("/bulk")
-    public ResponseEntity<ApiResponse<Void>> deleteBulkProducts(@RequestBody @NotEmpty List<@Positive Long> productIds) {
+    public ResponseEntity<ApiResponse<Void>> deleteBulkProducts(
+            @RequestBody @NotEmpty List<@Positive Long> productIds) {
         productService.deleteBulkProducts(productIds);
         return ResponseUtil.ok("Bulk products deleted successfully");
     }
 
     @Operation(summary = "Get all Product that not have in Stock")
     @GetMapping("/notInStock")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProductNotInStock(){
-        return  ResponseUtil.ok("product not inStock are retrieve successfully",productMapper.toDto(productService.getAllProductsInStockIsFalse()));
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProductNotInStock() {
+        return ResponseUtil.ok("product not inStock are retrieve successfully",
+                productMapper.toDto(productService.getAllProductsInStockIsFalse()));
     }
 
     @Operation(summary = "Update a product By Id")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductResponse>> updateProductById(@PathVariable @Positive Long id, @RequestBody @Valid ProductRequest productRequest) {
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProductById(@PathVariable @Positive Long id,
+            @RequestBody @Valid ProductRequest productRequest) {
         Product product = productMapper.toEntity(productRequest);
         Product saveUpdate = productService.updateProductById(id, product);
         return ResponseUtil.ok("update product successfully", productMapper.toProductResponse(saveUpdate));
