@@ -42,7 +42,7 @@ springdoc:
     enabled: true
     operationsSorter: method
     servers:
-      - url: http://localhost:8081
+      - url: http://localhost:8080
         description: Docker External Port
   api-docs:
     path: /v3/api-docs
