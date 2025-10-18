@@ -22,9 +22,12 @@ spring:
     banner-mode: console
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/product_management}
-    username: ${PGUSER:postgres}
-    password: ${PGPASSWORD:1234}
+    #    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/product_management}
+    url: ${DATABASE_URL:${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/product_management}}
+    #    username: ${PGUSER:postgres}
+    username: ${PGUSER:${SPRING_DATASOURCE_USERNAME:postgres}}
+    #    password: ${PGPASSWORD:1234}
+    password: ${PGPASSWORD:${SPRING_DATASOURCE_PASSWORD:1234}}
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
