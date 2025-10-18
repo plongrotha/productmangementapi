@@ -26,6 +26,10 @@ public class CacheConfig {
                 .maximumSize(500)
                 .expireAfterAccess(Duration.ofMinutes(10))
                 .build());
+        cacheManager.registerCustomCache("category", Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS)
+                .maximumSize(500)
+                .expireAfterAccess(Duration.ofMinutes(10))
+                .build());
         // return back when it called
         return cacheManager;
     }
