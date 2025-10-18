@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,14 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.save(category);
     }
 
-    @Cacheable(value = "employee", key = "#id")
+    @Cacheable(value = "category", key = "#id")
     @Override
     public Category getById(long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("category id : " + id + " is not found"));
     }
 
+    @CacheEvict(value = "category", allEntries = true)
     @Override
     public void deleteById(long id) {
         // getById(id);
@@ -45,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         });
     }
 
-    @Cacheable("employee")
+    @Cacheable("category")
     @Override
     public List<Category> allCategories() {
         return Optional.of(categoryRepository.findAll()).orElseThrow(() -> new NotFoundException("no found category"));
@@ -62,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Transactional
-    @Cacheable("employee")
+    @Cacheable("category")
     @Override
     public List<Category> addBulkCategory(List<Category> categories) {
         return categoryRepository.saveAll(categories);
